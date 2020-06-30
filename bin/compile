@@ -68,7 +68,7 @@ else
   cat "/etc/apt/sources.list" > "$APT_SOURCES"    # no cp here
 
   wget -q -O - https://packages.blackfire.io/gpg.key | gpg --dearmor > "$APT_TRUSTED_DIR/blackfire.gpg"
-  echo "deb http://packages.blackfire.io/debian any main" | tee BLACKFIRE_SOURCES
+  echo "deb http://packages.blackfire.io/debian any main" > $BLACKFIRE_SOURCES
 fi
 
 APT_OPTIONS="-o debug::nolocking=true -o dir::cache=$APT_CACHE_DIR -o dir::state=$APT_STATE_DIR"
