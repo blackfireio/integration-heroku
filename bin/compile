@@ -74,6 +74,7 @@ fi
 APT_OPTIONS="-o debug::nolocking=true -o dir::cache=$APT_CACHE_DIR -o dir::state=$APT_STATE_DIR"
 # Override the use of /etc/apt/sources.list (sourcelist) and /etc/apt/sources.list.d/* (sourceparts).
 APT_OPTIONS="$APT_OPTIONS -o dir::etc::sourcelist=$APT_SOURCES -o dir::etc::sourceparts=$APT_SOURCEPARTS_DIR"
+APT_OPTIONS="$APT_OPTIONS -o dir::etc::trustedparts=$APT_TRUSTED_DIR"
 
 apt-get $APT_OPTIONS update | indent
 
