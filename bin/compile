@@ -38,6 +38,7 @@ APT_STATE_DIR="$CACHE_DIR/apt/state"
 APT_SOURCELIST_DIR="$CACHE_DIR/apt/sources"   # place custom sources.list here
 APT_SOURCES="$APT_SOURCELIST_DIR/sources.list"
 APT_SOURCEPARTS_DIR="$CACHE_DIR/apt/sources.list.d"
+APT_TRUSTED_DIR="$CACHE_DIR/apt/trusted.gpg.d"
 BLACKFIRE_SOURCES="$APT_SOURCEPARTS_DIR/blackfire.list"
 
 APT_VERSION=$(apt-get -v | awk 'NR == 1{ print $2 }')
@@ -52,15 +53,21 @@ if [ -f $BLACKFIRE_SOURCES ] ; then
   topic "Blackfire repository is already installed."
 else
   topic "Installing Blackfire PackageCloud key"
-  wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add -
 
   topic "Adding Blackfire repository"
   rm -rf $APT_CACHE_DIR
+  rm -rf $APT_TRUSTED_DIR
   mkdir -p "$APT_CACHE_DIR/archives/partial"
   mkdir -p "$APT_STATE_DIR/lists/partial"
   mkdir -p "$APT_SOURCELIST_DIR"   # make dir for sources
   mkdir -p "$APT_SOURCEPARTS_DIR"
+  mkdir -p "$APT_TRUSTED_DIR"
+  if [[ -d $EXISTING_TRUSTED_DIR && -n "$(ls -A $EXISTING_TRUSTED_DIR)" ]]; then
+    cp -f /etc/apt/trusted.gpg.d/* "$APT_TRUSTED_DIR" # copy existing keys to new trusted keys dir
+  fi
   cat "/etc/apt/sources.list" > "$APT_SOURCES"    # no cp here
+
+  wget -q -O - https://packages.blackfire.io/gpg.key | gpg --dearmor > "$APT_TRUSTED_DIR/blackfire.gpg"
   echo "deb http://packages.blackfire.io/debian any main" | tee BLACKFIRE_SOURCES
 fi
 
