@@ -121,7 +121,6 @@ export BLACKFIRE_AGENT_SOCKET="unix://${BF_AGENT_SOCKET}"
 
 if [ ! -S ${BF_AGENT_SOCKET} ] ; then
   echo "Socket file doesn't exist yet: ${BF_AGENT_SOCKET}"
-  touch "${BF_AGENT_SOCKET}"
   blackfire-agent \
       --config=/app/${BF_AGENT_CONFIG_FILE} \
       --log-file="/app/${BF_AGENT_LOG_DIR}/agent.log" &
