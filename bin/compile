@@ -18,12 +18,13 @@ BF_AGENT_RUN_DIR="$BF_DIR/var/run"
 BF_AGENT_SOCKET="/app/${BF_AGENT_RUN_DIR}/agent.sock"
 BF_AGENT_LOG_DIR="$BF_DIR/var/log"
 BF_AGENT_CONFIG_FILE="$BF_DIR/etc/agent"
-BF_CLIENT_CONFIG_FILE="/app/.blackfire.ini"
+BF_CLIENT_CONFIG_FILE=".blackfire.ini"
 
 BF_BUILD_INSTALL_DIR="$BUILD_DIR/$BF_DIR"
 BF_BUILD_BIN_DIR="$BUILD_DIR/$BF_BIN_DIR"
 BF_BUILD_AGENT_RUN_DIR="$BUILD_DIR/$BF_AGENT_RUN_DIR"
 BF_BUILD_AGENT_CONFIG_FILE="$BUILD_DIR/$BF_AGENT_CONFIG_FILE"
+BF_BUILD_CLIENT_CONFIG_FILE="$BUILD_DIR/$BF_CLIENT_CONFIG_FILE"
 BF_BUILD_LOG_DIR="$BUILD_DIR/$BF_AGENT_LOG_DIR"
 BF_CACHE_DIR="$CACHE_DIR/$BF_DIR"
 
@@ -104,7 +105,7 @@ echo "Configuring the client" | indent
 $BF_BUILD_BIN_DIR/blackfire config \
     --client-id=$BLACKFIRE_CLIENT_ID \
     --client-token=$BLACKFIRE_CLIENT_TOKEN \
-    --config=$BF_CLIENT_CONFIG_FILE
+    --config=$BF_BUILD_CLIENT_CONFIG_FILE
 
 # Provision the startup profile script.
 topic "Writing profile script"
