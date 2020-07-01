@@ -33,6 +33,7 @@ function indent() {
   esac
 }
 
+mkdir -p "$BF_INSTALL_DIR"
 mkdir -p "$BF_BIN_DIR" "$BF_AGENT_RUN_DIR" "$BF_LOG_DIR" "$BF_CACHE_DIR"
 # Ensure we store the STACK in the cache for next time.
 echo "$STACK" > "$BF_CACHE_DIR/STACK"
