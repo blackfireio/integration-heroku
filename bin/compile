@@ -5,16 +5,12 @@
 set -e
 
 # debug
-set -x
+#set -x
 
 # parse and derive params
 BUILD_DIR=$1
 CACHE_DIR=$2
-pwd
-echo $BUILD_DIR
-bp_dir=$(cd $(dirname $0); cd ..; pwd)
-echo $bp_dir
-BF_INSTALL_DIR="/app/.blackfire"
+BF_INSTALL_DIR="$BUILD_DIR/.blackfire"
 BF_BIN_DIR="$BF_INSTALL_DIR/bin"
 BF_AGENT_RUN_DIR="$BF_INSTALL_DIR/var/run"
 BF_LOG_DIR="$BF_INSTALL_DIR/var/log"
