@@ -114,10 +114,10 @@ mkdir -p $BUILD_DIR/.profile.d
 cat <<EOF > ${BUILD_DIR}/.profile.d/blackfire-agent.sh
 export PATH="/app/${BF_BIN_DIR}:$PATH"
 export BLACKFIRE_LOG_FILE="/app/${BF_AGENT_LOG_DIR}/probe.log"
-export BLACKFIRE_LOG_LEVEL=\$\{BLACKFIRE_LOG_LEVEL:-"1"\}
-export BLACKFIRE_COLLECTOR=\$\{BLACKFIRE_COLLECTOR:-"https://blackfire.io"\}
-export BLACKFIRE_ENDPOINT=\$\{BLACKFIRE_ENDPOINT:-"https://blackfire.io"\}
-export BLACKFIRE_AGENT_SOCKET="unix:///${BF_AGENT_SOCKET}"
+export BLACKFIRE_LOG_LEVEL=\${BLACKFIRE_LOG_LEVEL:-"1"}
+export BLACKFIRE_COLLECTOR=\${BLACKFIRE_COLLECTOR:-"https://blackfire.io"}
+export BLACKFIRE_ENDPOINT=\${BLACKFIRE_ENDPOINT:-"https://blackfire.io"}
+export BLACKFIRE_AGENT_SOCKET="unix://${BF_AGENT_SOCKET}"
 
 if [ ! -f ${BF_AGENT_SOCKET} ] ; then
   touch "${BF_AGENT_SOCKET}"
