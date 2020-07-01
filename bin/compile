@@ -11,6 +11,9 @@ set -e
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
+BP_DIR=$(cd $(dirname $0); cd ..; pwd)
+
+source "$BP_DIR/bin/common.sh"
 
 BF_DIR=".blackfire"
 BF_BIN_DIR="$BF_DIR/bin"
@@ -27,23 +30,6 @@ BF_BUILD_AGENT_CONFIG_FILE="$BUILD_DIR/$BF_AGENT_CONFIG_FILE"
 BF_BUILD_CLIENT_CONFIG_FILE="$BUILD_DIR/$BF_CLIENT_CONFIG_FILE"
 BF_BUILD_LOG_DIR="$BUILD_DIR/$BF_AGENT_LOG_DIR"
 BF_CACHE_DIR="$CACHE_DIR/$BF_DIR"
-
-function error() {
-  echo " !     $*" >&2
-  exit 1
-}
-
-function topic() {
-  echo "-----> $*"
-}
-
-function indent() {
-  c='s/^/       /'
-  case $(uname) in
-    Darwin) sed -l "$c";;
-    *)      sed -u "$c";;
-  esac
-}
 
 if [ ! -f "$ENV_DIR/BLACKFIRE_SERVER_ID" ] ; then
   error "BLACKFIRE_SERVER_ID config variable must be defined!"
