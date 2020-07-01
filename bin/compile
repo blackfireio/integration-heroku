@@ -15,7 +15,7 @@ ENV_DIR=$3
 BF_DIR=".blackfire"
 BF_BIN_DIR="$BF_DIR/bin"
 BF_AGENT_RUN_DIR="$BF_DIR/var/run"
-BF_AGENT_SOCKET="/app/${BF_AGENT_RUN_DIR}/agent.sock"
+BF_AGENT_SOCKET_FILE="/app/${BF_AGENT_RUN_DIR}/agent.sock"
 BF_AGENT_LOG_DIR="$BF_DIR/var/log"
 BF_AGENT_CONFIG_FILE="$BF_DIR/etc/agent"
 BF_CLIENT_CONFIG_FILE=".blackfire.ini"
@@ -62,6 +62,10 @@ BLACKFIRE_COLLECTOR="https://blackfire.io"
 if [ -f "$ENV_DIR/BLACKFIRE_COLLECTOR" ] ; then
   BLACKFIRE_COLLECTOR=$(cat $ENV_DIR/BLACKFIRE_COLLECTOR)
 fi
+BLACKFIRE_AGENT_SOCKET=unix://${BF_AGENT_SOCKET_FILE}
+if [ -f "$ENV_DIR/BLACKFIRE_AGENT_SOCKET" ] ; then
+  BLACKFIRE_AGENT_SOCKET=$(cat $ENV_DIR/BLACKFIRE_AGENT_SOCKET)
+fi
 
 mkdir -p "$BF_BUILD_INSTALL_DIR" "$BF_BUILD_BIN_DIR" "$BF_BUILD_AGENT_RUN_DIR" "$BF_BUILD_LOG_DIR" "$BF_CACHE_DIR"
 
@@ -97,7 +101,7 @@ $BF_BUILD_BIN_DIR/blackfire-agent --register \
     --server-id=$BLACKFIRE_SERVER_ID \
     --server-token=$BLACKFIRE_SERVER_TOKEN \
     --config=$BF_BUILD_AGENT_CONFIG_FILE \
-    --socket=unix://${BF_AGENT_SOCKET} \
+    --socket=${BLACKFIRE_AGENT_SOCKET} \
     --log-level=${BLACKFIRE_LOG_LEVEL} \
     --collector=${BLACKFIRE_COLLECTOR}
 
@@ -117,9 +121,9 @@ export BLACKFIRE_LOG_FILE="/app/${BF_AGENT_LOG_DIR}/probe.log"
 export BLACKFIRE_LOG_LEVEL=\${BLACKFIRE_LOG_LEVEL:-"1"}
 export BLACKFIRE_COLLECTOR=\${BLACKFIRE_COLLECTOR:-"https://blackfire.io"}
 export BLACKFIRE_ENDPOINT=\${BLACKFIRE_ENDPOINT:-"https://blackfire.io"}
-export BLACKFIRE_AGENT_SOCKET="unix://${BF_AGENT_SOCKET}"
+export BLACKFIRE_AGENT_SOCKET="${BLACKFIRE_AGENT_SOCKET}"
 
-if [ ! -S ${BF_AGENT_SOCKET} ] ; then
+if [ ! -S ${BF_AGENT_SOCKET_FILE} ] ; then
   blackfire-agent \
       --config=/app/${BF_AGENT_CONFIG_FILE} \
       --log-file="/app/${BF_AGENT_LOG_DIR}/agent.log" &
