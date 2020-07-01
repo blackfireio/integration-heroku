@@ -97,7 +97,6 @@ $BF_BUILD_BIN_DIR/blackfire-agent --register \
     --server-token=$BLACKFIRE_SERVER_TOKEN \
     --config=$BF_BUILD_AGENT_CONFIG_FILE \
     --socket=unix://${BF_AGENT_SOCKET} \
-    --log-file="/app/${BF_AGENT_LOG_DIR}/blackfire-agent.log" \
     --log-level=${BLACKFIRE_LOG_LEVEL} \
     --collector=${BLACKFIRE_COLLECTOR}
 
@@ -118,7 +117,9 @@ export BLACKFIRE_COLLECTOR=${BLACKFIRE_COLLECTOR:-"https://blackfire.io"}
 
 if [ ! -f ${BF_AGENT_SOCKET} ] ; then
   touch "${BF_AGENT_SOCKET}"
-  blackfire-agent --config=/app/${BF_AGENT_CONFIG_FILE} &
+  blackfire-agent \
+      --config=/app/${BF_AGENT_CONFIG_FILE} \
+      --log-file="/app/${BF_AGENT_LOG_DIR}/blackfire-agent.log" &
 fi
 EOF
 
