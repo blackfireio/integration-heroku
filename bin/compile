@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir>
+# bin/compile <build-dir> <cache-dir> <env-dir>
 
 # fail fast
 set -e
@@ -10,7 +10,11 @@ set -e
 # parse and derive params
 BUILD_DIR=$1
 CACHE_DIR=$2
-LP_DIR=`cd $(dirname $0); cd ..; pwd`
+BF_INSTALL_DIR="/app/.heroku/blackfire"
+BF_BIN_DIR="$BF_INSTALL_DIR/bin"
+BF_AGENT_RUN_DIR="$BF_INSTALL_DIR/var/run"
+BF_LOG_DIR="$BF_INSTALL_DIR/var/log"
+BF_CACHE_DIR="$CACHE_DIR/.blackfire"
 
 function error() {
   echo " !     $*" >&2
@@ -29,65 +33,46 @@ function indent() {
   esac
 }
 
+mkdir -p "$BF_BIN_DIR" "$BF_AGENT_RUN_DIR" "$BF_LOG_DIR" "$BF_CACHE_DIR"
 # Ensure we store the STACK in the cache for next time.
-mkdir -p "$CACHE_DIR/.blackfire"
-echo "$STACK" > "$CACHE_DIR/.blackfire/STACK"
+echo "$STACK" > "$BF_CACHE_DIR/STACK"
 
-APT_CACHE_DIR="$CACHE_DIR/apt/cache"
-APT_STATE_DIR="$CACHE_DIR/apt/state"
-APT_SOURCELIST_DIR="$CACHE_DIR/apt/sources"   # place custom sources.list here
-APT_SOURCES="$APT_SOURCELIST_DIR/sources.list"
-APT_SOURCEPARTS_DIR="$CACHE_DIR/apt/sources.list.d"
-APT_TRUSTED_DIR="$CACHE_DIR/apt/trusted.gpg.d"
-BLACKFIRE_SOURCES="$APT_SOURCEPARTS_DIR/blackfire.list"
-
-APT_VERSION=$(apt-get -v | awk 'NR == 1{ print $2 }')
-
-case "$APT_VERSION" in
-  0* | 1.0*) APT_FORCE_YES="--force-yes";;
-  *)         APT_FORCE_YES="--allow-downgrades --allow-remove-essential --allow-change-held-packages";;
-esac
-
-if [ -f $BLACKFIRE_SOURCES ] ; then
-  # Old Aptfile is the same as new and STACK has not changed
-  topic "Blackfire repository is already installed."
+if [ -f "$BF_CACHE_DIR/AGENT_VERSION" ] ; then
+  BF_AGENT_INSTALLED_VERSION=$(cat "$BF_CACHE_DIR/AGENT_VERSION")
 else
-  topic "Installing Blackfire PackageCloud key"
-
-  topic "Adding Blackfire repository"
-  rm -rf $APT_CACHE_DIR
-  rm -rf $APT_TRUSTED_DIR
-  mkdir -p "$APT_CACHE_DIR/archives/partial"
-  mkdir -p "$APT_STATE_DIR/lists/partial"
-  mkdir -p "$APT_SOURCELIST_DIR"   # make dir for sources
-  mkdir -p "$APT_SOURCEPARTS_DIR"
-  mkdir -p "$APT_TRUSTED_DIR"
-  if [[ -d $EXISTING_TRUSTED_DIR && -n "$(ls -A $EXISTING_TRUSTED_DIR)" ]]; then
-    cp -f /etc/apt/trusted.gpg.d/* "$APT_TRUSTED_DIR" # copy existing keys to new trusted keys dir
-  fi
-  cat "/etc/apt/sources.list" > "$APT_SOURCES"    # no cp here
-
-  wget -q -O - https://packages.blackfire.io/gpg.key | gpg --dearmor > "$APT_TRUSTED_DIR/blackfire.gpg"
-  echo "deb http://packages.blackfire.io/debian any main" > $BLACKFIRE_SOURCES
+  BF_AGENT_INSTALLED_VERSION="0.1"
 fi
 
-APT_OPTIONS="-o debug::nolocking=true -o dir::cache=$APT_CACHE_DIR -o dir::state=$APT_STATE_DIR"
-# Override the use of /etc/apt/sources.list (sourcelist) and /etc/apt/sources.list.d/* (sourceparts).
-APT_OPTIONS="$APT_OPTIONS -o dir::etc::sourcelist=$APT_SOURCES -o dir::etc::sourceparts=$APT_SOURCEPARTS_DIR"
-APT_OPTIONS="$APT_OPTIONS -o dir::etc::trustedparts=$APT_TRUSTED_DIR"
+# Get the latest available version and compare it with the current installed one.
+BF_AGENT_VERSION=$(curl -s -I https://blackfire.io/api/v1/releases/agent/linux/amd64 | grep 'X-Blackfire-Release-Version: ' | sed "s%X-Blackfire-Release-Version: %%" | sed s%.$%%)
 
-apt-get $APT_OPTIONS update | indent
+if [[ "$BF_AGENT_INSTALLED_VERSION" == "$BF_AGENT_VERSION" ]] ; then
+  topic "Blackfire agent is already up-to-date"
+else
+  topic "Installing the latest version (${BF_AGENT_VERSION}) of Blackfire agent"
+  curl -A "Heroku" -o agent.tar.gz -L -s https://blackfire.io/api/v1/releases/agent/linux/amd64
+  tar -xzf agent.tar.gz
+  chmod +x agent
+  cp agent ${BF_BIN_DIR}/blackfire-agent
+  rm agent.tar.gz agent agent.sha1
 
-topic "Installing Blackfire agent"
-apt-get $APT_OPTIONS -y $APT_FORCE_YES -d install --reinstall blackfire-agent | indent
-
-topic "Configuring Blackfire agent and CLI tool"
-blackfire-agent
+  topic "Installing blackfire CLI tool"
+  curl -A "Heroku" -o ${BF_BIN_DIR}/blackfire -s https://packages.blackfire.io/binaries/blackfire-agent/${BF_AGENT_VERSION}/blackfire-cli-linux_amd64
+  chmod +x ${BF_BIN_DIR}/blackfire
+fi
 
 topic "Writing profile script"
 mkdir -p $BUILD_DIR/.profile.d
-echo "/etc/init.d/blackfire-agent restart" >$BUILD_DIR/.profile.d/000-blackfire-agent.sh
+cat <<EOF > ${BUILD_DIR}/.profile.d/000-blackfire-agent.sh
+export PATH="${BF_BIN_DIR}:$PATH"
+export BLACKFIRE_LOG_FILE="${BF_LOG_DIR}/blackfire-agent.log"
+export BLACKFIRE_SOCKET="unix://${BF_AGENT_RUN_DIR}/agent.sock"
+export BLACKFIRE_CONFIG="/dev/null"
+
+touch $BLACKFIRE_SOCKET
+blackfire-agent &
+EOF
 
 topic "Blackfire agent and CLI tool are now installed."
-blackfire-agent -v | indent
-blackfire version | indent
+${BF_BIN_DIR}/blackfire-agent -v | indent
+${BF_BIN_DIR}/blackfire version | indent
