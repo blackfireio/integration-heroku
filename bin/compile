@@ -75,7 +75,7 @@ export BLACKFIRE_LOG_FILE="/app/${BF_AGENT_LOG_DIR}/blackfire-agent.log"
 export BLACKFIRE_SOCKET="unix:///app/${BF_AGENT_RUN_DIR}/agent.sock"
 export BLACKFIRE_CONFIG="/dev/null"
 
-touch ${BLACKFIRE_SOCKET}
+touch "/app/${BF_AGENT_RUN_DIR}/agent.sock"
 blackfire-agent &
 EOF
 
