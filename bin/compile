@@ -119,8 +119,7 @@ export BLACKFIRE_COLLECTOR=\${BLACKFIRE_COLLECTOR:-"https://blackfire.io"}
 export BLACKFIRE_ENDPOINT=\${BLACKFIRE_ENDPOINT:-"https://blackfire.io"}
 export BLACKFIRE_AGENT_SOCKET="unix://${BF_AGENT_SOCKET}"
 
-ls -lah ${BF_AGENT_SOCKET}
-if [ ! -f ${BF_AGENT_SOCKET} ] ; then
+if [ ! -S ${BF_AGENT_SOCKET} ] ; then
   echo "Socket file doesn't exist yet: ${BF_AGENT_SOCKET}"
   touch "${BF_AGENT_SOCKET}"
   blackfire-agent \
