@@ -10,7 +10,7 @@ set -e
 # parse and derive params
 BUILD_DIR=$1
 CACHE_DIR=$2
-BF_INSTALL_DIR="/app/.heroku/blackfire"
+BF_INSTALL_DIR="/app/.blackfire"
 BF_BIN_DIR="$BF_INSTALL_DIR/bin"
 BF_AGENT_RUN_DIR="$BF_INSTALL_DIR/var/run"
 BF_LOG_DIR="$BF_INSTALL_DIR/var/log"
