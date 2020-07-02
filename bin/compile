@@ -30,15 +30,22 @@ BF_BUILD_CLIENT_CONFIG_FILE="$BUILD_DIR/$BF_CLIENT_CONFIG_FILE"
 BF_BUILD_LOG_DIR="$BUILD_DIR/$BF_AGENT_LOG_DIR"
 BF_CACHE_DIR="$CACHE_DIR/$BF_DIR"
 
-if [ ! -f "$ENV_DIR/BLACKFIRE_SERVER_ID" ] ; then
-  error "BLACKFIRE_SERVER_ID config variable must be defined!"
-fi
+for mandatoryVar in "BLACKFIRE_SERVER_ID" "BLACKFIRE_SERVER_TOKEN" "BLACKFIRE_CLIENT_ID" "BLACKFIRE_CLIENT_TOKEN"
+do
+  if [ ! -f "$ENV_DIR/$mandatoryVar" ] ; then
+    error "$mandatoryVar config variable must be defined!"
+  else
+    $$mandatoryVar=$(cat "$ENV_DIR/$mandatoryVar")
+    echo "$mandatoryVar - $$mandatoryVar"
+  fi
+done
 
 # Provisioning credentials and settings from config vars.
 BLACKFIRE_SERVER_ID=$(cat $ENV_DIR/BLACKFIRE_SERVER_ID)
 BLACKFIRE_SERVER_TOKEN=$(cat $ENV_DIR/BLACKFIRE_SERVER_TOKEN)
 BLACKFIRE_CLIENT_ID=$(cat $ENV_DIR/BLACKFIRE_CLIENT_ID)
 BLACKFIRE_CLIENT_TOKEN=$(cat $ENV_DIR/BLACKFIRE_CLIENT_TOKEN)
+
 # Default values for configurable env vars.
 BLACKFIRE_LOG_LEVEL="1"
 BLACKFIRE_COLLECTOR="https://blackfire.io"
