@@ -5,24 +5,24 @@
 
 This is the official Heroku Buildpack for [Blackfire](https://blackfire.io).
 
-Blackfire is the Code Performance Management solution for developers
-to find and fix performance bottlenecks in dev, test/staging and production.
+Blackfire Profiler is a Software-as-a-Service tool which measures how your code consumes resources at run-time. It enables to find performance bottlenecks and understand the code's behavior. It can be used in development, test/staging and production (with no overhead for end-users).
 
-This buildpack provides **Blackfire Agent** and **CLI Tool**. 
+Intuitive visualizations enable you to browse through your call stack, and review Wall-time, CPU time, I/O time, Memory, Network calls, HTTP requests and SQL queries usage.
 
-The Agent is the component that aggregates profile data collected by the *probe* from your application engine
-(PHP, Python, Go...), before sending it to Blackfire.io servers so that you can display and analyze it.
+This buildpack provides the **Blackfire Agent** and the **Blackfire CLI Tool**. Please refer to the Blackfire documentation for [more details on the Blackfire stack](https://blackfire.io/docs/reference-guide/faq#the-blackfire-stack).
 
-The CLI Tool provides a Blackfire client with 2 main commands:
+The Blackfire Agent is a daemon processing the data collected by the Blackfire Probe, and sending it to the Blackfire servers. The Blackfire Probe is a language extension; it collects resources consumption metrics on profiled code.
+
+The Blackfire CLI Tool provides a client with 2 main commands:
 
 * An HTTP client wrapping cURL to [profile web based apps](https://blackfire.io/docs/cookbooks/profiling-http-via-cli);
 * A client to [profile CLI Commands](https://blackfire.io/docs/cookbooks/profiling-cli).
 
 ## Requirements
 
-First and foremost, **you need an account on https://blackfire.io to use this buildpack**.
-
-You need to have **Blackfire probe** installed in your app.
+- [Signup or login to Blackfire.io](https://blackfire.io/signup)
+- Make sure the Blackfire Probe is installed (see installation procedures for each supported language below)
+- [Make sure that the Blackfire servers can reach your servers](https://blackfire.io/docs/cookbooks/reverse-proxies).
 
 ### PHP
 
@@ -31,8 +31,7 @@ official PHP buildpack](https://blackfire.io/docs/integrations/paas/heroku)**.
 
 ### Python
 
-Blackfire probe has to be installed via `pip`. As a result, you need to refer `blackfire` as dependency in your
-`requirements.txt` file, e.g.:
+Install the Blackfire Probe by referring `blackfire` as dependency in your `requirements.txt` file, e.g.:
 
 ```
 django
