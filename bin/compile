@@ -11,9 +11,8 @@ set -e
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
-BP_DIR=$(cd $(dirname $0); cd ..; pwd)
 
-source "$BP_DIR/bin/common.sh"
+source "$(dirname $0)/../../bin/common.sh"
 
 BF_DIR=".blackfire"
 BF_BIN_DIR="$BF_DIR/bin"
