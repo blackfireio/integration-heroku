@@ -113,5 +113,5 @@ if [ ! -S ${BF_AGENT_SOCKET_FILE} ] ; then
 fi
 EOF
 
-topic "Blackfire CLI command is now installed."
+topic "Blackfire is now installed."
 ${BF_BUILD_BIN_DIR}/blackfire version | indent
