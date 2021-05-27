@@ -35,6 +35,11 @@ BF_CACHE_DIR="$CACHE_DIR/$BF_DIR"
 
 mkdir -p "$BF_BUILD_INSTALL_DIR" "$BF_BUILD_BIN_DIR" "$BF_BUILD_AGENT_RUN_DIR" "$BF_BUILD_LOG_DIR" "$BF_CACHE_DIR"
 
+BP_DIR=$(cd "$(dirname "${0:-}")"; cd ..; pwd)
+cat > $BP_DIR/export <<EOF
+export PATH=${BF_BUILD_BIN_DIR}:\$PATH
+EOF
+
 # ----------
 # Provisioning credentials and settings from config vars.
 # Some variables are mandatory and need to be checked.
