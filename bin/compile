@@ -76,9 +76,8 @@ cp blackfire ${BF_BUILD_BIN_DIR}/blackfire
 rm blackfire.tar.gz blackfire blackfire.sha1
 
 ## Configure the Agent and the Client.
-topic "Blackfire configuration"
-echo "Configuring the agent" | indent
-$BF_BUILD_BIN_DIR/blackfire agent:config \
+topic "Configuring the Blackfire Agent"
+$BF_BUILD_BIN_DIR/blackfire agent:config -q \
     --server-id=$BLACKFIRE_SERVER_ID \
     --server-token=$BLACKFIRE_SERVER_TOKEN \
     --config=$BF_BUILD_AGENT_CONFIG_FILE \
@@ -86,8 +85,8 @@ $BF_BUILD_BIN_DIR/blackfire agent:config \
     --log-level=${BLACKFIRE_LOG_LEVEL} \
     --collector=${BLACKFIRE_COLLECTOR}
 
-echo "Configuring the client" | indent
-$BF_BUILD_BIN_DIR/blackfire client:config \
+topic "Configuring the Blackfire Client"
+$BF_BUILD_BIN_DIR/blackfire client:config -q \
     --client-id=$BLACKFIRE_CLIENT_ID \
     --client-token=$BLACKFIRE_CLIENT_TOKEN \
     --config=$BF_BUILD_CLIENT_CONFIG_FILE
