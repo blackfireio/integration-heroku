@@ -98,8 +98,8 @@ topic "Writing profile script"
 mkdir -p $BUILD_DIR/.profile.d
 
 cat <<EOF > ${BUILD_DIR}/.profile.d/blackfire-agent.sh
-export PATH="/app/${BF_BIN_DIR}:$PATH"
-export BLACKFIRE_LOG_FILE="/app/${BF_AGENT_LOG_DIR}/probe.log"
+export PATH="/app/${BF_BIN_DIR}:\$PATH"
+export BLACKFIRE_LOG_FILE="stderr"
 export BLACKFIRE_LOG_LEVEL=\${BLACKFIRE_LOG_LEVEL:-"1"}
 export BLACKFIRE_COLLECTOR=\${BLACKFIRE_COLLECTOR:-"https://blackfire.io"}
 export BLACKFIRE_ENDPOINT=\${BLACKFIRE_ENDPOINT:-"https://blackfire.io"}
@@ -108,7 +108,7 @@ export BLACKFIRE_AGENT_SOCKET="${BLACKFIRE_AGENT_SOCKET}"
 if [ ! -S ${BF_AGENT_SOCKET_FILE} ] ; then
   blackfire agent:start \
       --config=/app/${BF_AGENT_CONFIG_FILE} \
-      --log-file="/app/${BF_AGENT_LOG_DIR}/agent.log" &
+      --log-file="${BLACKFIRE_LOG_FILE}" &
 fi
 EOF
 
