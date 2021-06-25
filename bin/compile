@@ -108,7 +108,7 @@ export BLACKFIRE_AGENT_SOCKET="${BLACKFIRE_AGENT_SOCKET}"
 if [ ! -S ${BF_AGENT_SOCKET_FILE} ] ; then
   blackfire agent:start \
       --config=/app/${BF_AGENT_CONFIG_FILE} \
-      --log-file="${BLACKFIRE_LOG_FILE}" &
+      --log-file="\${BLACKFIRE_LOG_FILE}" &
 fi
 EOF
 
