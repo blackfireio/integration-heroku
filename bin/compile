@@ -112,7 +112,7 @@ if [ ! -S ${BF_AGENT_SOCKET_FILE} ] ; then
   blackfire_pid=\$!
   # give it a moment to start up...
   while ! test -S "${BF_AGENT_SOCKET_FILE}"; do
-    # ...unless it somehow crashes on start, then we have to bail to prevent an infite loop
+    # ...unless it somehow crashes on start, then we have to bail to prevent an infinite loop
     if ! kill -0 \$blackfire_pid 2> /dev/null; then # kill -0 checks if process exists
       echo "Failed to start blackfire agent!" >&2
       break;
